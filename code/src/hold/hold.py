@@ -31,6 +31,9 @@ class HOLD(pl.LightningModule):
         self.opt = opt
         self.args = args
         num_frames = args.n_images
+        # self.training_step_outputs = []
+        self.validation_step_outputs = []
+        # self.test_step_outputs = []
 
         data_path = os.path.join(f"{BASE_PATH}/data", args.case, f"build/data.npy")
         entities = np.load(data_path, allow_pickle=True).item()["entities"]
@@ -124,6 +127,7 @@ class HOLD(pl.LightningModule):
         debug.debug_params(self)
         model_outputs = self.model(batch)
         loss_output = self.loss(batch, model_outputs)
+
         if self.global_step % self.args.log_every == 0:
             self.metrics(model_outputs, batch, self.global_step, self.current_epoch)
             comet_utils.log_dict(
@@ -135,9 +139,10 @@ class HOLD(pl.LightningModule):
 
         loss = loss_output["loss"]
         self.log("loss", loss)
+        # self.training_step_outputs.append(loss)
         return loss
 
-    def on_train_epoch_end(self, outputs) -> None:
+    def on_train_epoch_end(self) -> None:
         current_step = self.global_step
         current_epoch = self.current_epoch
         # Canonical mesh update every 20 epochs
@@ -147,7 +152,9 @@ class HOLD(pl.LightningModule):
             self.meshing_cano(current_step)
             self.save_misc()
 
-        return super().training_epoch_end(outputs)
+        # self.training_step_outputs.clear()
+
+        return super().on_train_epoch_end()
 
     def meshing_cano(self, current_step):
         mesh_dict = {}
@@ -212,7 +219,9 @@ class HOLD(pl.LightningModule):
         return batch_parts
 
     def validation_step(self, batch, *args, **kwargs):
-        return self.inference_step(batch, *args, **kwargs)
+        out = self.inference_step(batch, *args, **kwargs)
+        self.validation_step_outputs.append(out)
+        return out
 
     def test_step(self, batch, *args, **kwargs):
         out = self.inference_step(batch, *args, **kwargs)
@@ -234,11 +243,12 @@ class HOLD(pl.LightningModule):
     def test_step_end(self, batch_parts):
         return self.inference_step_end(batch_parts)
 
-    def validation_epoch_end(self, outputs) -> None:
+    def on_validation_epoch_end(self) -> None:
         if not self.args.no_vis:
-            img_size = outputs[0]["img_size"]
-            idx = outputs[0]["idx"]
-            vis_dict = vis_utils.output2images(outputs, img_size)
+            img_size = self.validation_step_outputs[0]["img_size"]
+            idx = self.validation_step_outputs[0]["idx"]
+            vis_dict = vis_utils.output2images(self.validation_step_outputs, img_size)
             vis_utils.record_vis(
                 idx, self.global_step, self.args.log_dir, self.args.experiment, vis_dict
             )
+        self.validation_step_outputs.clear()

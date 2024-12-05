@@ -73,7 +73,8 @@ def one_hot_embedding(labels, num_classes):
     Returns:
       (tensor) encoded labels, sized [N, D1, D2, .., Dk, #classes].
     """
-    y = torch.eye(num_classes).float()
+    device = labels.device
+    y = torch.eye(num_classes, device=device).float()
     return y[labels]
 
 

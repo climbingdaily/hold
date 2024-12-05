@@ -4,6 +4,7 @@ import os.path as op
 
 import numpy as np
 import pytorch_lightning as pl
+import torch
 
 from src.hold.hold import HOLD
 from src.datasets.utils import create_dataset
@@ -11,6 +12,7 @@ from src.utils.parser import parser_args
 from common.torch_utils import reset_all_seeds
 
 
+torch.set_float32_matmul_precision('high')
 from pathlib import Path
 BASE_PATH = str(Path(__file__).resolve().parents[3])
 def main():
@@ -54,14 +56,12 @@ def main():
     reset_all_seeds(1)
     ckpt_path = None if args.ckpt_p == "" else args.ckpt_p
     if args.load_ckpt != "":
-        import torch
 
         sd = torch.load(args.load_ckpt)["state_dict"]
         model.load_state_dict(sd)
         ckpt_path = None
 
     if args.load_pose != "":
-        import torch
 
         sd = torch.load(args.load_pose)["state_dict"]
         mysd = model.state_dict()

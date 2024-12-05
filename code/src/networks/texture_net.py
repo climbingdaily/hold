@@ -38,7 +38,7 @@ class RenderingNet(nn.Module):
             out_dim = dims[l + 1]
             lin = nn.Linear(dims[l], out_dim)
             if opt.weight_norm:
-                lin = nn.utils.weight_norm(lin)
+                lin = nn.utils.parametrizations.weight_norm(lin)
             setattr(self, "lin" + str(l), lin)
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()

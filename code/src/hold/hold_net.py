@@ -138,7 +138,8 @@ class HOLDNet(nn.Module):
     def init_network(self):
         if self.args.shape_init != "":
             model_state = torch.load(
-                f"{BASE_PATH}/saved_models/{self.args.shape_init}/checkpoints/last.ckpt"
+                f"{BASE_PATH}/saved_models/{self.args.shape_init}/checkpoints/last.ckpt",
+                weights_only=True
             )
             sd = model_state["state_dict"]
             sd = {

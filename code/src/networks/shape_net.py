@@ -77,7 +77,7 @@ class ImplicitNet(nn.Module):
                     torch.nn.init.constant_(lin.bias, 0.0)
                     torch.nn.init.uniform_(lin.weight, -init_val, init_val)
             if opt.weight_norm:
-                lin = nn.utils.weight_norm(lin)
+                lin = nn.utils.parametrizations.weight_norm(lin)
             setattr(self, "lin" + str(l), lin)
         self.softplus = nn.Softplus(beta=100)
 
