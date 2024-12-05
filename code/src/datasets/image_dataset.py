@@ -11,6 +11,8 @@ from torch.utils.data import Dataset
 from src.datasets.utils import load_image, load_mask
 from src.datasets.utils import reform_dict, weighted_sampling, load_K_Rt_from_P
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[2])
 
 class ImageDataset(Dataset):
     def setup_poses(self, data):
@@ -23,7 +25,7 @@ class ImageDataset(Dataset):
         self.params = out
 
     def __init__(self, args):
-        self.root = os.path.join("./data", args.case, "build")
+        self.root = os.path.join(f"{BASE_PATH}/data", args.case, "build")
         self.args = args
         data = np.load(os.path.join(self.root, "data.npy"), allow_pickle=True).item()
 

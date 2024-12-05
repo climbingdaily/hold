@@ -7,12 +7,14 @@ import numpy as np
 sys.path = [".."] + sys.path
 from common.rot import axis_angle_to_matrix
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[3])
 
 class ObjectModel(nn.Module):
     def __init__(self, seq_name, template=None):
         super(ObjectModel, self).__init__()
 
-        data = np.load(f"./data/{seq_name}/build/data.npy", allow_pickle=True).item()[
+        data = np.load(f"{BASE_PATH}/data/{seq_name}/build/data.npy", allow_pickle=True).item()[
             "entities"
         ]["object"]
         if template is None:

@@ -11,6 +11,8 @@ from src.utils.parser import parser_args
 from common.torch_utils import reset_all_seeds
 
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[3])
 def main():
     args, opt = parser_args()
     print("Working dir:", os.getcwd())
@@ -25,7 +27,8 @@ def main():
     )
 
     trainer = pl.Trainer(
-        gpus=1,
+        # gpus=1,
+        devices=1,
         accelerator="gpu",
         gradient_clip_val=0.5,
         callbacks=[checkpoint_callback],

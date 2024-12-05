@@ -14,7 +14,7 @@ pillow
 pygit2==1.10.1
 pymeshlab==2022.2.post4
 pyparsing
-pytorch-lightning==1.5.7
+pytorch-lightning
 scipy
 scikit-learn
 tqdm

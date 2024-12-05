@@ -22,7 +22,8 @@ import numpy as np
 from loguru import logger
 from src.datasets.utils import split_input, merge_output
 
-
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[2])
 class HOLD(pl.LightningModule):
     def __init__(self, opt, args) -> None:
         super().__init__()
@@ -31,7 +32,7 @@ class HOLD(pl.LightningModule):
         self.args = args
         num_frames = args.n_images
 
-        data_path = os.path.join("./data", args.case, f"build/data.npy")
+        data_path = os.path.join(f"{BASE_PATH}/data", args.case, f"build/data.npy")
         entities = np.load(data_path, allow_pickle=True).item()["entities"]
 
         betas_r = entities["right"]["mean_shape"] if "right" in entities else None
@@ -136,7 +137,7 @@ class HOLD(pl.LightningModule):
         self.log("loss", loss)
         return loss
 
-    def training_epoch_end(self, outputs) -> None:
+    def on_train_epoch_end(self, outputs) -> None:
         current_step = self.global_step
         current_epoch = self.current_epoch
         # Canonical mesh update every 20 epochs

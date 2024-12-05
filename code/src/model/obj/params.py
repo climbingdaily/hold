@@ -1,6 +1,8 @@
 from src.model.generic.params import GenericParams
 
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[3])
 class ObjectParams(GenericParams):
     def forward(self, frame_ids):
         params = super().forward(frame_ids)
@@ -14,7 +16,7 @@ class ObjectParams(GenericParams):
 
         # load parameter from preprocessing
         params_o = {param_name: [] for param_name in self.param_names}
-        data_root = os.path.join("./data", case, f"build/data.npy")
+        data_root = os.path.join(f"{BASE_PATH}/data", case, f"build/data.npy")
         data = np.load(data_root, allow_pickle=True).item()["entities"]["object"]
 
         obj_poses = data["object_poses"]

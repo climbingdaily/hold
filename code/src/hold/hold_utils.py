@@ -1,11 +1,14 @@
 import sys
+from pathlib import Path
 
 import torch
 
 from src.engine.rendering import sort_tensor
 import numpy as np
 
-sys.path = [".."] + sys.path
+
+sys.path.append(str(Path(__file__).resolve().parents[3]))
+
 from common.xdict import xdict
 
 from kaolin.ops.mesh import index_vertices_by_faces

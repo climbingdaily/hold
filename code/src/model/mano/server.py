@@ -113,13 +113,15 @@ class GenericServer(torch.nn.Module):
         return out
 
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[3])
 class MANOServer(GenericServer):
     def __init__(self, betas, is_rhand):
         from src.model.mano.specs import mano_specs
         from src.utils.external.body_models import MANO
 
         mano_layer = MANO(
-            model_path="./body_models",
+            model_path=f"{BASE_PATH}/body_models",
             is_rhand=is_rhand,
             batch_size=1,
             flat_hand_mean=False,

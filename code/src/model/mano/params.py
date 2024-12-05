@@ -1,6 +1,8 @@
 import torch
 from src.model.generic.params import GenericParams
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[3])
 
 class MANOParams(GenericParams):
     def forward(self, frame_ids):
@@ -18,7 +20,7 @@ class MANOParams(GenericParams):
 
         # load parameter from preprocessing
         params_h = {param_name: [] for param_name in self.param_names}
-        data_root = os.path.join("./data", case, f"build/data.npy")
+        data_root = os.path.join(f"{BASE_PATH}/data", case, f"build/data.npy")
         data = np.load(data_root, allow_pickle=True).item()["entities"][self.node_id]
 
         mean_shape = data["mean_shape"]

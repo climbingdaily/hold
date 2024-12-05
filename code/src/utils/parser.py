@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 sys.path = [".."] + sys.path
 import sys
@@ -9,6 +10,7 @@ from omegaconf import OmegaConf
 import numpy as np
 import os
 
+BASE_PATH = str(Path(__file__).resolve().parents[2])
 
 def parser_args():
     import argparse
@@ -16,14 +18,14 @@ def parser_args():
     from easydict import EasyDict as edict
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="./confs/general.yaml")
+    parser.add_argument("--config", type=str, default= BASE_PATH + "/confs/general.yaml")
     parser.add_argument("--gpu_id", type=int, default=0)
     parser.add_argument("--log_every", type=int, default=10)
-    parser.add_argument("--case", type=str, required=True)
+    parser.add_argument("--case", type=str, default="hold_bottle1_itw")
     parser.add_argument("--shape_init", type=str, default="75268d864")
     parser.add_argument("--mute", help="No logging", action="store_true")
     parser.add_argument("--agent_id", type=int, default=0)
-    parser.add_argument("--num_sample", type=int, default=128)
+    parser.add_argument("--num_sample", type=int, default=64)
     parser.add_argument("--num_workers", type=int, default=8)
     parser.add_argument("--exp_key", type=str, default="")
     parser.add_argument("--debug", action="store_true", help="debug mode")
@@ -63,7 +65,7 @@ def parser_args():
         help="Resume training from checkpoint and keep logging in the same comet exp",
     )
     parser.add_argument(
-        "--eval_every_epoch", type=int, default=6, help="Eval every k epochs"
+        "--eval_every_epoch", type=int, default=1, help="Eval every k epochs"
     )
     parser.add_argument("--tempo_len", type=int, default=2000)
     parser.add_argument("--dump_eval_meshes", action="store_true")
@@ -74,7 +76,7 @@ def parser_args():
     args.cmd = cmd
     args.project = "blaze"
 
-    data = np.load(f"./data/{args.case}/build/data.npy", allow_pickle=True).item()
+    data = np.load(f"{BASE_PATH}/data/{args.case}/build/data.npy", allow_pickle=True).item()
     opt.model.scene_bounding_sphere = data["scene_bounding_sphere"]
 
     if args.fast_dev_run:
@@ -98,7 +100,7 @@ def parser_args():
     if experiment is not None:
         comet_utils.log_exp_meta(args)
 
-    img_paths = sorted(glob(f"./data/{args.case}/build/image/*.png"))
+    img_paths = sorted(glob(f"{BASE_PATH}/data/{args.case}/build/image/*.png"))
     assert len(img_paths) > 0, "No images found"
     args.n_images = len(img_paths)
     return args, opt

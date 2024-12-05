@@ -20,6 +20,8 @@ from src.hold.hold_utils import prepare_loss_targets_object
 from src.hold.hold_utils import volumetric_render
 
 
+from pathlib import Path
+BASE_PATH = str(Path(__file__).resolve().parents[2])
 class HOLDNet(nn.Module):
     def __init__(
         self,
@@ -136,7 +138,7 @@ class HOLDNet(nn.Module):
     def init_network(self):
         if self.args.shape_init != "":
             model_state = torch.load(
-                f"./saved_models/{self.args.shape_init}/checkpoints/last.ckpt"
+                f"{BASE_PATH}/saved_models/{self.args.shape_init}/checkpoints/last.ckpt"
             )
             sd = model_state["state_dict"]
             sd = {
