@@ -23,6 +23,17 @@ def process_mask(seq_name, flag):
         os.makedirs(os.path.dirname(out_p), exist_ok=True)
         Image.fromarray(out_mask).save(out_p)
 
+def replace_new_with_original(folder_path):
+    new_files = glob(os.path.join(folder_path, "*_new.png"))
+    
+    for new_file in new_files:
+        base_name = new_file.replace("_new.png", ".png")
+        if os.path.exists(base_name):
+            os.remove(base_name)  # 删除旧文件
+        print(f"Renaming: {os.path.abspath(new_file)} to {os.path.abspath(base_name)}")
+        os.rename(new_file, base_name)
+    
+    return sorted(glob(os.path.join(folder_path, "*.png")))
 
 def validate_mask(seq_name):
     print(f"Processing {seq_name}")
@@ -31,19 +42,15 @@ def validate_mask(seq_name):
     rgb_ps = sorted(glob(f"./data/{seq_name}/images/*"))
 
     # Step 1: format masks
+
+    right_mask_ps = replace_new_with_original(f"./data/{seq_name}/processed/sam/right/images_masks")
+    left_mask_ps = replace_new_with_original(f"./data/{seq_name}/processed/sam/left/images_masks")
+    object_mask_ps = replace_new_with_original(f"./data/{seq_name}/processed/sam/object/images_masks")
+
     process_mask(seq_name, "right")
     process_mask(seq_name, "left")
     process_mask(seq_name, "object")
 
-    right_mask_ps = sorted(
-        glob(f"./data/{seq_name}/processed/sam/right/images_masks/*.png")
-    )
-    left_mask_ps = sorted(
-        glob(f"./data/{seq_name}/processed/sam/left/images_masks/*.png")
-    )
-    object_mask_ps = sorted(
-        glob(f"./data/{seq_name}/processed/sam/object/images_masks/*.png")
-    )
     if len(left_mask_ps) > 0:
         assert len(left_mask_ps) == len(object_mask_ps)
 

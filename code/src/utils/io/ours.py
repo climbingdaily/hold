@@ -32,7 +32,7 @@ def map_deform2eval(verts, scale, _normalize_shift):
 def load_data(sd_p):
     device = "cuda:0"
     print("Loading data")
-    data = torch.load(sd_p, map_location="cpu")
+    data = torch.load(sd_p, map_location="cpu", weights_only=False)
     sd = xdict(data["state_dict"])
     misc_ps = sorted(glob(op.join("logs", sd_p.split("/")[1], "misc", "*")))
     misc = np.load(misc_ps[-1], allow_pickle=True).item()
@@ -60,7 +60,7 @@ def load_data(sd_p):
     scale_key = "model.nodes.object.server.object_model.obj_scale"
     obj_scale = sd[scale_key] if scale_key in sd.keys() else None
 
-    seq_name = fnames[0].split("/")[2]
+    seq_name = fnames[0].split("/")[-4]
 
     servers = {}
     faces = {}

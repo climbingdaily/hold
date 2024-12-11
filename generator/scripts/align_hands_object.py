@@ -51,7 +51,7 @@ def main(args):
     pl_model = PLModule(data, args, conf)
     trainer = pl.Trainer(
         logger=False,
-        gpus=1,
+        devices=1,
         accelerator="gpu",
         gradient_clip_val=0.5,
         max_epochs=1,
