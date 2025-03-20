@@ -20,12 +20,12 @@ from generator.src.alignment.data import FakeDataset
 def main(args):
     device = "cuda"
     k_path_colmap = op.join(f"./data/{args.seq_name}/processed/colmap/intrinsic.npy")
-    ho3d_seq = args.seq_name.split("_")[1]
-    k_path_ho3d = f"./assets/datasets/HO3D_v3/processed/{ho3d_seq}.pt"
-    if op.exists(k_path_ho3d):
-        K = torch.load(k_path_ho3d)["K"][0]
-    else:
-        K = torch.FloatTensor(np.load(k_path_colmap))
+    K = torch.FloatTensor(np.load(k_path_colmap))
+    if args.seq_name.startswith('hold_'):
+        ho3d_seq = args.seq_name.split("_")[1]
+        k_path_ho3d = f"./assets/datasets/HO3D_v3/processed/{ho3d_seq}.pt"
+        if op.exists(k_path_ho3d):
+            K = torch.load(k_path_ho3d)["K"][0]
     data = read_data(args.seq_name, K=K).to(device)
 
     out_p = op.join(f"./data/{args.seq_name}/processed/hold_fit.aligned.npy")
